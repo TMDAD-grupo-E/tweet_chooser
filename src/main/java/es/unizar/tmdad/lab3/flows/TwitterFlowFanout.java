@@ -17,6 +17,18 @@ import org.springframework.integration.dsl.IntegrationFlow;
 import org.springframework.integration.dsl.IntegrationFlows;
 import org.springframework.integration.dsl.amqp.Amqp;
 import org.springframework.integration.dsl.channel.MessageChannels;
+import org.springframework.integration.dsl.AggregatorSpec;
+import org.springframework.integration.dsl.support.Consumer;
+import org.springframework.integration.transformer.GenericTransformer;
+import org.springframework.social.twitter.api.HashTagEntity;
+import org.springframework.social.twitter.api.Tweet;
+
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
+
 
 @Configuration
 @Profile("fanout")
@@ -74,7 +86,6 @@ public class TwitterFlowFanout extends TwitterFlowCommon {
 	// MessageEndpoint RabbitMQ -(requestChannelRabbitMQ)-> tareas ...
 	//
 
-	@Override
 	@Bean
 	public DirectChannel requestChannelRabbitMQ() {
 		return MessageChannels.direct().get();
@@ -87,5 +98,37 @@ public class TwitterFlowFanout extends TwitterFlowCommon {
 		smlc.setQueues(aTwitterFanoutQueue());
 		return Amqp.inboundAdapter(smlc)
 				.outputChannel(requestChannelRabbitMQ()).get();
+	}
+
+	// Flujo #3
+
+	@Bean
+	public IntegrationFlow sendTrendingTopics() {
+		return IntegrationFlows
+				.from(requestChannelRabbitMQ())
+				.filter("payload instanceof T(org.springframework.social.twitter.api.Tweet)")
+				.aggregate(aggregationSpec())
+				.transform(trendingTopics())
+				.handle("streamSendingService", "sendTrends").get();
+	}
+
+	private Consumer<AggregatorSpec> aggregationSpec() {
+		return a -> a.correlationStrategy(m -> 1)
+				.releaseStrategy(g -> g.size() == 1000)
+				.expireGroupsUponCompletion(true);
+	}
+
+	private GenericTransformer<List<Tweet>, List<Map.Entry<String, Integer>>> trendingTopics() {
+		return l -> {
+			Map<String, Integer> codes = l.stream()
+					.flatMap(t -> t.getEntities().getHashTags().stream())
+					.collect(Collectors.groupingBy(HashTagEntity::getText, Collectors.reducing(0, s -> 1, Integer::sum)));
+
+			List<Map.Entry<String, Integer>> tt = new ArrayList<>(codes.entrySet());
+			tt.sort(Collections.reverseOrder(Map.Entry.comparingByValue())); // Order by value to take first 10
+
+			return tt.subList(0, 10);
+
+		};
 	}
 }
