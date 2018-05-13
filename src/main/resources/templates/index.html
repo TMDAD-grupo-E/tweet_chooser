@@ -29,6 +29,17 @@
         </div>
     </script>
 
+    <script id="trends_template" type="x-tmpl-mustache">
+        <p> </p>
+            <a>
+                {{#trends}}
+                    <p>
+                    <span class="fas fa-hashtag"></span> {{key}} : {{val}}
+                    </p>
+                {{/trends}}
+            </a>
+    </script>
+
 
 
 </head>
@@ -47,6 +58,15 @@
     <div class="container-fluid">
         <div class="card-columns mt-3" id="resultsBlock"></div>
     </div>
+
+    <div class="container-fluid">
+        <!-- trending topics container-->
+        <b>Trending Topics</b>
+        <div>
+            <ul class="list-group" id="trendingsBlock"></ul>
+        </div>
+    </div>
+
     <script src="http://code.jquery.com/jquery-3.0.0.min.js"
              th:src="@{/webjars/jquery/3.0.0/jquery.min.js}"></script>
      <script
