@@ -7,7 +7,7 @@ import org.springframework.social.twitter.api.impl.TwitterTemplate;
  
 @Configuration
 public class TwitterConfigurationTemplate {
-    @Value("${twitter.consumerKey}")
+    /*@Value("${twitter.consumerKey}")
     private String consumerKey;
  
     @Value("${twitter.consumerSecret}")
@@ -17,7 +17,15 @@ public class TwitterConfigurationTemplate {
     private String accessToken;
  
     @Value("${twitter.accessTokenSecret}")
-    private String accessTokenSecret;
+    private String accessTokenSecret;*/
+
+    private String consumerKey = System.getenv("consumerKey");
+
+    private String consumerSecret = System.getenv("consumerSecret");
+
+    private String accessToken = System.getenv("accessToken");
+
+    private String accessTokenSecret = System.getenv("accessTokenSecret");
  
     @Bean
     public TwitterTemplate twitterTemplate() {

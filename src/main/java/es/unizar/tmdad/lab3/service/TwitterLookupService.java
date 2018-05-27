@@ -26,7 +26,7 @@ import es.unizar.tmdad.lab3.utils.CountryAdapter;
 public class TwitterLookupService {
 
 
-	@Value("${twitter.consumerKey}")
+	/*@Value("${twitter.consumerKey}")
 	private String consumerKey;
 
 	@Value("${twitter.consumerSecret}")
@@ -36,7 +36,16 @@ public class TwitterLookupService {
 	private String accessToken;
 
 	@Value("${twitter.accessTokenSecret}")
-	private String accessTokenSecret;
+	private String accessTokenSecret;*/
+
+
+	private String consumerKey = System.getenv("consumerKey");
+
+	private String consumerSecret = System.getenv("consumerSecret");
+
+	private String accessToken = System.getenv("accessToken");
+
+	private String accessTokenSecret = System.getenv("accessTokenSecret");
 
 	CountryAdapter adapter = new CountryAdapter();
 
