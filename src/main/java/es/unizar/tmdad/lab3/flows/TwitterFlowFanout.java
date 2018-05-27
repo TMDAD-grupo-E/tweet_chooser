@@ -108,8 +108,8 @@ public class TwitterFlowFanout extends TwitterFlowCommon {
 				.from(requestChannelRabbitMQ())
 				.filter("payload instanceof T(org.springframework.social.twitter.api.Tweet)")
 				.aggregate(aggregationSpec())
-				.transform(trendingTopics())
-				.handle("streamSendingService", "sendTrends").get();
+				//.transform(trendingTopics())
+				.handle("streamSendingService", "sendTweet").get();
 	}
 
 	private Consumer<AggregatorSpec> aggregationSpec() {
@@ -118,7 +118,7 @@ public class TwitterFlowFanout extends TwitterFlowCommon {
 				.expireGroupsUponCompletion(true);
 	}
 
-	private GenericTransformer<List<Tweet>, List<Map.Entry<String, Integer>>> trendingTopics() {
+	/*private GenericTransformer<List<Tweet>, List<Map.Entry<String, Integer>>> trendingTopics() {
 		return l -> {
 			Map<String, Integer> codes = l.stream()
 					.flatMap(t -> t.getEntities().getHashTags().stream())
@@ -130,5 +130,5 @@ public class TwitterFlowFanout extends TwitterFlowCommon {
 			return tt.subList(0, 10);
 
 		};
-	}
+	}*/
 }

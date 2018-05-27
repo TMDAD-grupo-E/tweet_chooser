@@ -50,10 +50,10 @@ public class StreamSendingService {
 				targeted.getTweet(), map);
 	}
 
-	public void sendTrends(List<Map.Entry<String, Integer>> targeted) {
+	/*public void sendTrends(List<Map.Entry<String, Integer>> targeted) {
 		Map<String, Object> map = new HashMap<>();
 		map.put(MessageHeaders.CONTENT_TYPE, MimeTypeUtils.APPLICATION_JSON);
 		ops.convertAndSend("/queue/trends",
 				targeted, map);
-	}
+	}*/
 }
